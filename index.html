@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Libreta de Predicación PRO</title>
+    <title>Libreta de Predicación PRO - Adaptativa</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,6 +13,7 @@
             --paper: #ffffff;
             --text: #333;
             --border: #dcdde1;
+            --base-font-size: 18px; /* Tamaño inicial */
         }
 
         body {
@@ -31,87 +32,118 @@
             position: sticky;
             top: 10px;
             background: var(--primary);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 12px;
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
             z-index: 1000;
             margin-bottom: 20px;
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
             justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .toolbar button, .toolbar select {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.3);
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+            padding-right: 10px;
+            margin-right: 5px;
+        }
+
+        .toolbar-group:last-child { border: none; }
+
+        .toolbar button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
             color: white;
-            padding: 8px 12px;
+            padding: 8px 15px;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 14px;
-            transition: 0.3s;
+            font-weight: 600;
+            transition: all 0.2s;
         }
 
         .toolbar button:hover {
             background: var(--accent);
-            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .btn-zoom {
+            background: #34495e !important;
+            font-size: 1.2em !important;
         }
 
         /* Editor Container */
         .notebook-container {
             background: var(--paper);
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
             min-height: 1100px;
-            padding: 50px 70px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            border-radius: 4px;
+            padding: 60px 80px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            border-radius: 8px;
             box-sizing: border-box;
             outline: none;
             line-height: 1.6;
+            font-size: var(--base-font-size);
+            transition: font-size 0.2s ease-out;
         }
 
-        /* Typography inside editor */
-        #editor h1 { font-family: 'Playfair Display', serif; color: var(--primary); font-size: 2.5em; margin-bottom: 10px; text-align: center; }
-        #editor h2 { border-bottom: 2px solid var(--accent); color: var(--primary); padding-bottom: 5px; margin-top: 30px; }
-        #editor h3 { color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-size: 1.1em; }
-        #editor blockquote { border-left: 4px solid var(--accent); background: #fff9f4; padding: 15px; font-style: italic; margin: 20px 0; }
-        #editor hr { border: 0; border-top: 1px solid var(--border); margin: 30px 0; }
-        .highlight { background-color: #fff3cd; padding: 2px 5px; border-radius: 3px; }
-
+        /* Typography settings */
+        #editor h1 { font-family: 'Playfair Display', serif; color: var(--primary); font-size: 2.8em; margin-bottom: 10px; text-align: center; line-height: 1.2; }
+        #editor h2 { border-bottom: 3px solid var(--accent); color: var(--primary); padding-bottom: 8px; margin-top: 40px; font-size: 1.8em; }
+        #editor h3 { color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-size: 1.1em; margin-bottom: 5px; }
+        #editor blockquote { border-left: 5px solid var(--accent); background: #fffaf5; padding: 20px; font-style: italic; margin: 25px 0; border-radius: 0 8px 8px 0; }
+        #editor hr { border: 0; border-top: 2px solid #eee; margin: 40px 0; }
+        
+        /* Utility for printing */
         @media print {
             .toolbar, .instructions { display: none; }
             body { background: white; padding: 0; }
-            .notebook-container { box-shadow: none; max-width: 100%; width: 100%; border: none; }
+            .notebook-container { box-shadow: none; max-width: 100%; width: 100%; border: none; padding: 20px; }
         }
 
         .instructions {
             margin-bottom: 15px;
             font-size: 0.9em;
             color: #666;
-            text-align: center;
+            background: #e9ecef;
+            padding: 5px 15px;
+            border-radius: 20px;
         }
     </style>
 </head>
 <body>
 
     <div class="instructions">
-        <strong>Modo Editor Activo:</strong> Haz clic en cualquier parte del texto para editar. Usa la barra superior para dar formato.
+        ✨ <b>Modo Pro:</b> Edita el texto directamente. Usa <b>A+ / A-</b> para ajustar tu lectura.
     </div>
 
     <div class="toolbar">
-        <button onclick="execCmd('bold')"><b>B</b></button>
-        <button onclick="execCmd('italic')"><i>I</i></button>
-        <button onclick="execCmd('underline')"><u>U</u></button>
-        <button onclick="execCmd('formatBlock', 'h2')">H2</button>
-        <button onclick="execCmd('formatBlock', 'h3')">H3</button>
-        <button onclick="execCmd('insertUnorderedList')">• Lista</button>
-        <button onclick="execCmd('justifyLeft')">⬅</button>
-        <button onclick="execCmd('justifyCenter')">↔</button>
-        <button onclick="window.print()">🖨️ Imprimir / PDF</button>
+        <div class="toolbar-group">
+            <button class="btn-zoom" onclick="changeFontSize(2)" title="Agrandar letra">A +</button>
+            <button class="btn-zoom" onclick="changeFontSize(-2)" title="Reducir letra">A -</button>
+        </div>
+        
+        <div class="toolbar-group">
+            <button onclick="execCmd('bold')"><b>B</b></button>
+            <button onclick="execCmd('italic')"><i>I</i></button>
+            <button onclick="execCmd('formatBlock', 'h2')">Título</button>
+            <button onclick="execCmd('insertUnorderedList')">• Lista</button>
+        </div>
+
+        <div class="toolbar-group">
+            <button onclick="execCmd('justifyLeft')">⬅</button>
+            <button onclick="execCmd('justifyCenter')">↔</button>
+        </div>
+
+        <button style="background: #27ae60;" onclick="window.print()">🖨️ Imprimir / PDF</button>
     </div>
 
     <div id="editor" class="notebook-container" contenteditable="true">
@@ -123,7 +155,7 @@
         </blockquote>
 
         <h3>⚓ Versículo base</h3>
-        <p style="text-align: center; font-size: 1.2em;"><i>“Cristo nos libertó para que vivamos en libertad. Por lo tanto, manténganse firmes y no se sometan nuevamente al yugo de esclavitud.”</i><br><strong>— Gálatas 5:1 (NVI)</strong></p>
+        <p style="text-align: center; font-style: italic; color: #555;">“Cristo nos libertó para que vivamos en libertad. Por lo tanto, manténganse firmes y no se sometan nuevamente al yugo de esclavitud.”<br><strong>— Gálatas 5:1 (NVI)</strong></p>
 
         <h1>Relaciones libres: viviendo en Cristo, no en sistemas humanos</h1>
 
@@ -139,58 +171,70 @@
         </ul>
 
         <h2>💡 Idea Big</h2>
-        <p style="text-align: center; font-weight: 600; font-size: 1.3em; color: var(--accent);">
+        <p style="text-align: center; font-weight: 700; color: var(--accent); border: 2px dashed var(--accent); padding: 15px; border-radius: 10px;">
             "Las relaciones sanas nacen de la vida de Cristo en nosotros, no de reglas, conducta o análisis humano."
         </p>
 
         <h2>🔥 1. Legalismo: Cuando las reglas sustituyen a Cristo</h2>
         <p>Reduce la relación a normas externas. Produce control, juicio o rebeldía.</p>
         <blockquote>“¿Tan necios son? Después de haber comenzado con el Espíritu, ¿pretenden ahora perfeccionarse con esfuerzos humanos?” — Gálatas 3:3</blockquote>
-        <p><strong>📍 Aplicación:</strong> Deja de medir a las personas por reglas; confía en la obra interna de Dios.</p>
+        <p><strong>👉 Aplicación:</strong> Deja de medir a las personas por reglas; confía en la obra interna de Dios.</p>
 
         <h2>💔 2. Moralismo: Cuando la conducta sustituye la identidad</h2>
         <p>Enfoca el comportamiento sin cambiar el corazón. Genera culpa o orgullo espiritual.</p>
         <blockquote>“Porque ustedes han muerto, y su vida está escondida con Cristo en Dios.” — Colosenses 3:3</blockquote>
-        <p><strong>📍 Aplicación:</strong> Habla a la identidad en Cristo, no solo a la conducta.</p>
+        <p><strong>👉 Aplicación:</strong> Habla a la identidad en Cristo, no solo a la conducta.</p>
 
         <h2>🧠 3. Psicologismo: Cuando el yo sustituye al Espíritu</h2>
         <p>Centra todo en emociones o razonamiento humano. Pierde dependencia del Espíritu Santo.</p>
         <blockquote>“Ya no vivo yo sino que Cristo vive en mí.” — Gálatas 2:20</blockquote>
-        <p><strong>📍 Aplicación:</strong> Somete tus emociones a Cristo y depende del Espíritu.</p>
+        <p><strong>👉 Aplicación:</strong> Somete tus emociones a Cristo y depende del Espíritu.</p>
 
         <hr>
 
         <h2>✝️ Centro: La vida en Cristo</h2>
         <p>Amas, perdonas y restauras desde <b>Su vida</b>, no desde tu capacidad.</p>
 
-        <h2>🌿 Aplicación (esta semana)</h2>
+        <h2>🌿 Aplicación Práctica</h2>
         <ul>
-            <li>Identifica qué sistema domina tus relaciones.</li>
-            <li>Rinde esa área a Cristo.</li>
-            <li>Ora: “Jesús, vive Tu vida en mí.”</li>
+            <li><b>Identifica:</b> ¿Qué sistema domina hoy tus conversaciones?</li>
+            <li><b>Rinde:</b> Entrega ese control a Dios en oración.</li>
+            <li><b>Vive:</b> Declara: “Jesús, ama a través de mí hoy”.</li>
         </ul>
 
-        <h2>🙏 Llamado / Oración</h2>
-        <p><i>Señor Jesús, renuncio a confiar en mis esfuerzos. Hoy descanso en Tu gracia. Vive Tu vida en mí y transforma mis relaciones desde adentro. Amén.</i></p>
+        <h2>🙏 Oración de Cierre</h2>
+        <p style="background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px solid #eee;">
+            <i>“Señor Jesús, renuncio a confiar en mis esfuerzos. Hoy descanso en Tu gracia. Vive Tu vida en mí y transforma mis relaciones desde adentro. Amén.”</i>
+        </p>
 
     </div>
 
     <script>
+        // Función para comandos de edición
         function execCmd(command, value = null) {
             document.execCommand(command, false, value);
         }
+
+        // Función para cambiar el tamaño de letra
+        let currentSize = 18;
+        function changeFontSize(delta) {
+            currentSize += delta;
+            if(currentSize < 12) currentSize = 12; // Mínimo
+            if(currentSize > 60) currentSize = 60; // Máximo para no romper el layout
+            document.getElementById('editor').style.fontSize = currentSize + 'px';
+        }
         
-        // Evitar perder cambios al recargar (Opcional - Guardado automático simple)
+        // Guardado automático simple en el navegador
         const editor = document.getElementById('editor');
         editor.addEventListener('input', () => {
-            localStorage.setItem('predicacion_content', editor.innerHTML);
+            localStorage.setItem('predicacion_pro_v2', editor.innerHTML);
         });
 
+        // Cargar contenido previo si existe
         window.onload = () => {
-            const saved = localStorage.getItem('predicacion_content');
+            const saved = localStorage.getItem('predicacion_pro_v2');
             if(saved) {
-                // Si quieres que se guarde lo que editas, descomenta la siguiente línea:
-                // editor.innerHTML = saved;
+                // editor.innerHTML = saved; // Descomenta esta línea para que tus cambios sean permanentes al recargar
             }
         };
     </script>
